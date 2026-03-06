@@ -1,0 +1,1 @@
+from .update_member_info_repository import UpdateMemberInfoRepository

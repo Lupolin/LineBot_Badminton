@@ -1,0 +1,17 @@
+__pycache__/
+
+venv/
+.venv/
+*.env
+
+.db
+.vscode/
+.idea/
+*.log
+logs/
+
+# === 本地使用者設定檔 ===
+users_config.json
+!users_config.example.json
+config.json
+*.secrets.json

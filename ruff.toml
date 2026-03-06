@@ -1,0 +1,40 @@
+# format while line length > 120
+line-length = 120
+
+# python version
+target-version = "py311"
+
+[lint]
+# Enable flake8-bugbear (`B`) rules.
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+
+# Never enforce `E501` (line length violations).
+ignore = ["E501"]
+
+# Avoid trying to fix flake8-bugbear (`B`) violations.
+unfixable = ["B"]
+
+# Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
+[lint.per-file-ignores]
+"*__init__.py" = ["F401"]
+
+# ESB specific enum code
+"domain/account_creation/models/jcic_condition.py" = ["E741"]
+"infrastructure/esb/adapter/ejcic/z21_status.py" = ["E741"]
+"infrastructure/esb/adapter/ejcic/z22_status.py" = ["E741"]
+"membership/domain/model/member/id_no_validator.py" = ["E741"]
+
+# isort caused circular import error
+"apps/datacontracts/account_creation/results/__init__.py" = ["I001"]
+"infrastructure/otp/__init__.py" = ["I001"]
+
+[format]
+exclude = ["account/app/opening/test_integration/test_verify_aml.py"]
