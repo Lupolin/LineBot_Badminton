@@ -21,7 +21,7 @@ class IntentRequest(BaseModel):
     response_model=ApiResponse[bool],
 )
 @trace_method("API: HandleMemberReply")
-async def handle_request(request: IntentRequest):
+def handle_request(request: IntentRequest):
     registry.dispatcher.execute(
         user_id=request.user_id,
         user_content=request.user_content,

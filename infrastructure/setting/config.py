@@ -75,7 +75,6 @@ class Config:
     LINE_BOT: LineBotConfig = field(default_factory=LineBotConfig.from_env)
     SQLALCHEMY: SQLAlchemyConfig = field(default_factory=SQLAlchemyConfig.from_env)
     OPENTELEMETRY: OpenTelemetryConfig = field(default_factory=OpenTelemetryConfig.from_env)
-    USERS_CONFIG_PATH: str = "users_config.json"
     TIMEZONE: str = "Asia/Taipei"
     BADMINTON_TIME: str = "18-20"
     BADMINTON_LOCATION: str = "信義國小"

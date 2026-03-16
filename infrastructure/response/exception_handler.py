@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from .schemas import ApiResponse
 
 
-async def global_exception_handler(request: Request, exc: Exception):
+def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=400,
         content=ApiResponse.error_response(f"{str(exc)}").model_dump(),

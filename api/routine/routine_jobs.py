@@ -15,7 +15,7 @@ router = APIRouter()
     response_model=ApiResponse[bool],
 )
 @trace_method("API: SendReminder")
-async def send_reminder():
+def send_reminder():
     use_case = registry.send_reminder_use_case
     use_case.execute()
     return ApiResponse.success_response(data=True)
@@ -29,7 +29,7 @@ async def send_reminder():
     response_model=ApiResponse[bool],
 )
 @trace_method("API: SendSummary")
-async def send_summary():
+def send_summary():
     use_case = registry.send_summary_use_case
     use_case.execute()
     return ApiResponse.success_response(data=True)
@@ -43,7 +43,7 @@ async def send_summary():
     response_model=ApiResponse[bool],
 )
 @trace_method("API: ResetAttendance")
-async def reset_attendance():
+def reset_attendance():
     use_case = registry.reset_attendance_use_case
     use_case.execute()
     return ApiResponse.success_response(data=True)
@@ -57,21 +57,21 @@ async def reset_attendance():
     response_model=ApiResponse[bool],
 )
 @trace_method("API: UpdatePlayedDate")
-async def update_played_date():
+def update_played_date():
     use_case = registry.update_played_date_use_case
     use_case.execute()
     return ApiResponse.success_response(data=True)
 
 
 @router.post(
-    "/insert_attendance_record",
+    "/insert-attendance-record",
     status_code=status.HTTP_200_OK,
     summary="同步成員出席紀錄",
     description="觸發 UseCase 執行同步成員已出席紀錄的邏輯",
     response_model=ApiResponse[bool],
 )
 @trace_method("API: InsertAttendanceRecord")
-async def insert_attendance_record():
+def insert_attendance_record():
     use_case = registry.insert_attendance_record_use_case
     use_case.execute()
     return ApiResponse.success_response(data=True)

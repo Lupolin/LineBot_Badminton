@@ -14,12 +14,12 @@ router = APIRouter()
     "/webhook",
     summary="LINE Webhook 監聽入口",
 )
-async def line_webhook(
+def line_webhook(
     request: Request,
     background_tasks: BackgroundTasks,
     x_line_signature: str = Header(None),
 ):
-    body_dict = await request.json()
+    body_dict = request.json()
     events = registry.line_message_handler.parse_webhook_body(body_dict)
 
     for event in events:
