@@ -1,3 +1,3 @@
-from .config import Config, FlaskConfig, LineBotConfig
+from .config import Config
 
 config = Config()

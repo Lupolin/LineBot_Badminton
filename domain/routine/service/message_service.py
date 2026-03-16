@@ -27,8 +27,8 @@ class MessageService:
 
         return template.format(
             date=played_date,
-            time=config.BADMINTON_TIME,
-            location=config.BADMINTON_LOCATION,
+            time=config.MESSAGE.TIME,
+            location=config.MESSAGE.LOCATION,
         )
 
     @trace_method("Service: MessageService.get_summary_message")

@@ -28,22 +28,6 @@ class LineBotConfig:
             ),
         )
 
-
-@dataclass(frozen=True)
-class FlaskConfig:
-    HOST: str = "0.0.0.0"
-    PORT: int = 8080
-    DEBUG: bool = False
-
-    @classmethod
-    def from_env(cls):
-        return cls(
-            HOST=os.getenv("HOST", "0.0.0.0"),
-            PORT=int(os.getenv("PORT", "8080")),
-            DEBUG=os.getenv("DEBUG", "false").lower() == "true",
-        )
-
-
 @dataclass(frozen=True)
 class SQLAlchemyConfig:
     DATABASE_PATH: str
@@ -57,28 +41,36 @@ class SQLAlchemyConfig:
 
 @dataclass(frozen=True)
 class OpenTelemetryConfig:
-    ENDPOINT: str = "http://localhost:4318/v1/traces"
+    ENDPOINT: str | None
+    ENABLE: bool
 
     @classmethod
     def from_env(cls):
         return cls(
-            ENDPOINT=os.getenv(
-                "OPENTELEMETRY_ENDPOINT",
-                "http://localhost:4318/v1/traces",
-            ),
+            ENDPOINT=os.getenv("OPENTELEMETRY_ENDPOINT"),
+            ENABLE=os.getenv("OPENTELEMETRY_ENABLE", "false").lower() == "true",
         )
 
+@dataclass(frozen=True)
+class MessageConfig:
+    TIME: str
+    LOCATION: str
+
+    @classmethod
+    def from_env(cls):
+        return cls(
+            TIME=os.getenv("BADMINTON_TIME"),
+            LOCATION=os.getenv("BADMINTON_LOCATION"),
+        )
 
 @dataclass(frozen=True)
 class Config:
-    FLASK: FlaskConfig = field(default_factory=FlaskConfig.from_env)
     LINE_BOT: LineBotConfig = field(default_factory=LineBotConfig.from_env)
     SQLALCHEMY: SQLAlchemyConfig = field(default_factory=SQLAlchemyConfig.from_env)
     OPENTELEMETRY: OpenTelemetryConfig = field(default_factory=OpenTelemetryConfig.from_env)
+    MESSAGE: MessageConfig = field(default_factory=MessageConfig.from_env)
     TIMEZONE: str = "Asia/Taipei"
-    BADMINTON_TIME: str = "18-20"
-    BADMINTON_LOCATION: str = "信義國小"
-    SERVICE_NAME: str = "line-bot-backend"
+    SERVICE_NAME: str = "LineBot_Badminton"
 
     def __post_init__(self):
         self.validate()

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class BadmintonMessages:
     ASK_DEFAULT: str = (
-        "嗨各位~\n這週五({date})\n"
+        "嗨各位~\n這週五({date} {time})\n"
         "我們照常在{location}打球，\n"
         "回復一下你會不會來吧，讓我們好抓人數喔~\n\n"
         "請回覆「要」或「不要」喔！"
