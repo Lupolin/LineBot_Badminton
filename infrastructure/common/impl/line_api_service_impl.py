@@ -26,13 +26,13 @@ class LineApiServiceImpl(LineApiService):
             response = requests.get(url, headers=self._headers, timeout=5)
             if response.status_code == 200:
                 data = response.json()
-                return data.get("displayName", "新成員")
+                return data.get("displayName", user_id)
 
             self.logger.warning(f"LINE API 查詢失敗, Status: {response.status_code}, UserID: {user_id}")
-            return "新成員"
+            return user_id
         except Exception as e:
             self.logger.error(f"LINE API 連線異常: {e}")
-            return "新成員"
+            return user_id
 
     @trace_method("Infra: LineApiServiceImpl.reply_message")
     def reply_message(self, reply_token: str, reply_content: str) -> None:
