@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class AttendanceRecord:
+class Attendance:
     user_id: str
     user_name: str
     is_attending: bool
