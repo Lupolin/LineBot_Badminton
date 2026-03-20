@@ -20,7 +20,12 @@ class RegisterMemberUseCase:
         self.logger = logger
 
     @trace_method("UseCase: RegisterMemberUseCase")
-    def execute(self, user_id: str, user_content: str, intent: UserIntent, member: MemberInfo):
+    def execute(
+            self, user_id: str,
+            user_content: str,
+            intent: UserIntent,
+            member: MemberInfo,
+    ) -> None:
         self.logger.info(f"RegisterMemberUseCase: user_id={user_id}, intent={intent}")
 
         is_admin_request = user_content == "註冊Admin"

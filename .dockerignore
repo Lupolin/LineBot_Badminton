@@ -1,24 +1,23 @@
+.git
+.gitignore
+.dockerignore
+README.md
+LICENSE
+
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .pytest_cache/
-.venv/
-venv/
+.coverage
+htmlcov/
 
 .env
-*.env
 *.secrets.json
 users_config.json
 
-.vscode/
-.idea/
-.DS_Store
-*.swp
-
-*.log
-logs/
-*.db
-*.sqlite3
+.venv/
+venv/
+env/
 
 .fly/
