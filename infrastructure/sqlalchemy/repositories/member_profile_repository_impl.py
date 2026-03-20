@@ -27,7 +27,7 @@ class MemberRepositoryImpl(
             members = (
                 session.query(MemberProfile)
                 .filter(
-                    MemberProfile.last_replied_at.is_(None),
+                    MemberProfile.is_attending.is_(None),
                 )
                 .all()
             )

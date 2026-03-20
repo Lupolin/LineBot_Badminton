@@ -38,9 +38,10 @@ class QueryStatUseCase:
         self,
         user_id: str,
         user_content: str,
+        reply_token: str,
         intent: UserIntent,
         member: MemberInfo,
-    ):
+    ) -> None:
         try:
             self.logger.info(f"QueryStatUseCase: user_id={user_id}, intent={intent}")
 
@@ -63,10 +64,17 @@ class QueryStatUseCase:
 
             self.member_repo.save(member)
 
-            self.messenger.push_message(
-                user_id,
-                summary_message,
-            )
+            if reply_token:
+                self.messenger.reply_message(
+                    reply_token=reply_token,
+                    message=summary_message,
+                )
+            else:
+                self.messenger.push_message(
+                    user_id=user_id,
+                    message=summary_message,
+                )
+
             self.logger.info("Query Stat process finished.")
             return
 

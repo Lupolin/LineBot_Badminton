@@ -38,6 +38,7 @@ class NotifyAgainUseCase:
         self,
         user_id: str,
         user_content: str,
+        reply_token: str,
         intent: UserIntent,
         member: MemberInfo,
     ):

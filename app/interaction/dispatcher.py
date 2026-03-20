@@ -16,15 +16,27 @@ class IntentDispatcher:
         self.messenger = messenger
 
     @trace_method("UseCase: IntentDispatcher.execute")
-    def execute(self, user_id: str, user_content: str) -> None:
+    def execute(
+        self,
+        user_id: str,
+        user_content: str,
+        reply_token: str | None = None,
+    ) -> None:
         intent = UserIntent.from_text(user_content)
         member = self.member_repo.find_by_id(user_id)
+        message = "你...你是誰啊？！\n你不在註冊名單內啊！"
 
         if not member and intent != UserIntent.REGISTER:
-            self.messenger.push_message(
-                user_id=user_id,
-                message="你...你是誰啊？！\n你不在註冊名單內啊！",
-            )
+            if reply_token:
+                self.messenger.reply_message(
+                    reply_token=reply_token,
+                    message=message,
+                )
+            else:
+                self.messenger.push_message(
+                    user_id=user_id,
+                    message=message,
+                )
             raise ValueError(f"User {user_id} not found.")
 
         if intent == UserIntent.UNKNOWN:
@@ -40,6 +52,7 @@ class IntentDispatcher:
         use_case.execute(
             user_id=user_id,
             user_content=user_content,
+            reply_token=reply_token,
             intent=intent,
             member=member,
         )

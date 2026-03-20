@@ -17,14 +17,13 @@ class UserIntent(Enum):
 
         t = text.strip()
 
-        # 使用對照表（Mapping），增加可讀性
         keywords = {
             cls.ATTEND: ["要", "參加", "+1", "yes", "好"],
             cls.CANCEL: ["不要", "取消", "-1", "no"],
-            cls.QUERY_STAT: ["統計", "名單", "誰要來"],
+            cls.QUERY_STAT: ["統計", "名單", "誰要來", "本週球友"],
             cls.NOTIFY_AGAIN: ["發出召集令", "通知"],
             cls.GET_HELP: ["指令", "幫助", "help"],
-            cls.REGISTER: ["註冊", "註冊Admin"],
+            cls.REGISTER: ["註冊", "Admin"],
         }
 
         matches = [intent for intent, kws in keywords.items() if t in kws]

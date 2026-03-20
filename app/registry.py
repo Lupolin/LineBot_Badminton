@@ -127,6 +127,7 @@ class Registry:
     def register_member_use_case(self) -> RegisterMemberUseCase:
         return RegisterMemberUseCase(
             member_repo=self._member_repo,
+            messenger=self._messenger,
             line_api_service=self.line_api_service,
             logger=self.logger,
         )
