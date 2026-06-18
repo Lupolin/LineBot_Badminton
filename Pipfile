@@ -1,0 +1,31 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+fastapi = "0.103.1"
+uvicorn = "0.24.0"
+pydantic = "==2.11.7"
+python-dotenv = "==1.1.0"
+aiohttp = "==3.12.15"
+sqlalchemy = { extras = ["asyncio"], version = "*" }
+asyncpg = "*"
+greenlet = "*"
+PyMySQL = "==1.1.0"
+line-bot-sdk = "==3.17.1"
+APScheduler = "==3.11.0"
+ujson = "5.8.0"
+dataclasses-json = "0.5.14"
+opentelemetry-api = "==1.39.1"
+opentelemetry-sdk = "==1.39.1"
+opentelemetry-exporter-otlp = "*"
+opentelemetry-instrumentation-fastapi = "==0.60b1"
+
+[dev-packages]
+mypy = "1.18.2"
+ruff = "0.14.1"
+httpx = "*"
+
+[requires]
+python_version = "3.11"

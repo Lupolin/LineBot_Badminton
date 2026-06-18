@@ -1,0 +1,2 @@
+from .attendance_record_repository import AttendanceRecordRepository
+from .get_member_info_repository import GetMemberInfoRepository

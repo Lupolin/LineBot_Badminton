@@ -1,0 +1,2 @@
+from .attendance_record_repository_impl import AttendanceRecordRepositoryImpl
+from .member_profile_repository_impl import MemberRepositoryImpl
