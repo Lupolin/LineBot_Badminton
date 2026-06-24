@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from logging import Logger
 from typing import TYPE_CHECKING
 
-from domain.interaction.entities import UserIntent
-from domain.interaction.repository import UpdateMemberInfoRepository
-from infrastructure.common import LineMessageService
+from domain.entity import UserIntent
+from domain.gateway import MessageService
+from domain.repository import MemberProfileRepository
 from infrastructure.opentelemetry import trace_method
 
 if TYPE_CHECKING:
@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 @dataclass
 class IntentDispatcher:
     registry: Registry
-    member_repo: UpdateMemberInfoRepository
-    messenger: LineMessageService
+    member_profile_repo: MemberProfileRepository
+    message_service: MessageService
     logger: Logger
 
     @trace_method("UseCase: IntentDispatcher.execute")
@@ -28,14 +28,14 @@ class IntentDispatcher:
         reply_token: str | None = None,
     ) -> str:
         intent = UserIntent.from_text(user_content)
-        member = await self.member_repo.find_by_id(user_id)
+        member = await self.member_profile_repo.find_by_id(user_id)
 
         self.logger.info(f"Dispatching request | User: {user_id} | Intent: {intent.name}")
 
         if not member and intent != UserIntent.REGISTER:
             message = "你...你是誰啊？！\n你不在註冊名單內啊！"
             if reply_token:
-                await self.messenger.reply_message(
+                await self.message_service.reply_message(
                     reply_token=reply_token,
                     message=message,
                 )

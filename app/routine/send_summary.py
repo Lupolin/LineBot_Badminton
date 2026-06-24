@@ -1,22 +1,20 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.routine import (
-    GetMemberInfoRepository,
+from domain.gateway import (
+    DateTimeCalendarService,
     MessageService,
 )
-from infrastructure.common import (
-    DateTimeCalendarService,
-    LineMessageService,
-)
+from domain.repository import MemberProfileRepository
+from domain.service import MessageGenerator
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
 class SendSummaryUseCase:
-    repo: GetMemberInfoRepository
-    messenger: LineMessageService
-    provider: MessageService
+    member_profile_repo: MemberProfileRepository
+    message_service: MessageService
+    message_generator: MessageGenerator
     calendar: DateTimeCalendarService
     logger: Logger
 
@@ -27,12 +25,12 @@ class SendSummaryUseCase:
 
             self.logger.info(f"Starting summary process for game ({played_date}).")
 
-            admin_members = await self.repo.get_admin_members()
-            attending_members = await self.repo.get_attending_members()
-            not_attending_members = await self.repo.get_not_attending_members()
-            pending_members = await self.repo.get_pending_members()
+            admin_members = await self.member_profile_repo.get_admin_members()
+            attending_members = await self.member_profile_repo.get_attending_members()
+            not_attending_members = await self.member_profile_repo.get_not_attending_members()
+            pending_members = await self.member_profile_repo.get_pending_members()
 
-            summary_message = self.provider.get_summary_message(
+            summary_message = self.message_generator.get_summary_message(
                 played_date=played_date,
                 attending_members=attending_members,
                 not_attending_members=not_attending_members,
@@ -42,7 +40,7 @@ class SendSummaryUseCase:
             success_count = 0
             for member in admin_members:
                 try:
-                    await self.messenger.push_message(
+                    await self.message_service.push_message(
                         member.user_id,
                         summary_message,
                     )

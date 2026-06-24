@@ -1,28 +1,24 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.interaction.entities import (
+from domain.entity import (
     MemberInfo,
     UserIntent,
 )
-from domain.interaction.repository import UpdateMemberInfoRepository
-from domain.routine import (
-    GetMemberInfoRepository,
+from domain.gateway import (
+    DateTimeCalendarService,
     MessageService,
 )
-from infrastructure.common import (
-    DateTimeCalendarService,
-    LineMessageService,
-)
+from domain.repository import MemberProfileRepository
+from domain.service import MessageGenerator
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
 class QueryStatUseCase:
-    member_repo: UpdateMemberInfoRepository
-    message_repo: GetMemberInfoRepository
-    messenger: LineMessageService
-    provider: MessageService
+    member_profile_repo: MemberProfileRepository
+    message_service: MessageService
+    message_generator: MessageGenerator
     calendar: DateTimeCalendarService
     logger: Logger
 
@@ -44,21 +40,21 @@ class QueryStatUseCase:
             )
 
             played_date = self.calendar.get_played_date()
-            attending_members = await self.message_repo.get_attending_members()
-            not_attending_members = await self.message_repo.get_not_attending_members()
-            pending_members = await self.message_repo.get_pending_members()
+            attending_members = await self.member_profile_repo.get_attending_members()
+            not_attending_members = await self.member_profile_repo.get_not_attending_members()
+            pending_members = await self.member_profile_repo.get_pending_members()
 
-            message = self.provider.get_summary_message(
+            message = self.message_generator.get_summary_message(
                 played_date=played_date,
                 attending_members=attending_members,
                 not_attending_members=not_attending_members,
                 pending_members=pending_members,
             )
 
-            await self.member_repo.save(member)
+            await self.member_profile_repo.save(member)
 
             if reply_token:
-                await self.messenger.reply_message(
+                await self.message_service.reply_message(
                     reply_token=reply_token,
                     message=message,
                 )

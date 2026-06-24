@@ -1,4 +1,4 @@
-import logging
+from functools import cached_property
 
 from app.interaction import IntentDispatcher
 from app.interaction.usecases import (
@@ -17,52 +17,14 @@ from app.routine import (
     SendSummaryUseCase,
     UpdatePlayedDateUseCase,
 )
-from domain.interaction.entities import UserIntent
-from domain.routine import (
-    BadmintonMessages,
-    MessageService,
-)
-from infrastructure.common.impl import (
-    DateTimeCalendarServiceImpl,
-    LineApiServiceImpl,
-    LineMessageHandlerImpl,
-    LineMessageServiceImpl,
-)
-from infrastructure.http import HttpContext
-from infrastructure.scheduler import SchedulerService
-from infrastructure.setting import config
-from infrastructure.sqlalchemy import SQLAlchemyContext
-from infrastructure.sqlalchemy.repositories import (
-    AttendanceRecordRepositoryImpl,
-    MemberRepositoryImpl,
-)
+from domain.entity import BadmintonMessages, UserIntent
+from domain.service import MessageGenerator
+from infrastructure import registry as infra_registry
 
 
 class Registry:
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
-        self.http = HttpContext(logger=self.logger)
-        self.session_factory = SQLAlchemyContext(logger=self.logger)
-        self.scheduler_service = SchedulerService(logger=self.logger)
-        self.line_api_service = LineApiServiceImpl(logger=self.logger, http=self.http)
-        self.line_message_handler = LineMessageHandlerImpl(logger=self.logger)
-        self._member_repo = MemberRepositoryImpl(
-            session_factory=self.session_factory,
-            logger=self.logger,
-        )
-        self._record_repo = AttendanceRecordRepositoryImpl(
-            session_factory=self.session_factory,
-            logger=self.logger,
-        )
-        self._messenger = LineMessageServiceImpl(
-            access_token=config.LINE_BOT.CHANNEL_ACCESS_TOKEN,
-            logger=self.logger,
-        )
-        self._msg_service = MessageService(
-            messages=BadmintonMessages(),
-            timezone=config.TIMEZONE,
-        )
-        self._calendar = DateTimeCalendarServiceImpl(logger=self.logger)
+        self._message_generator = MessageGenerator(messages=BadmintonMessages())
         self._use_case_map = {
             UserIntent.ATTEND: lambda: self.handle_attendance_use_case,
             UserIntent.CANCEL: lambda: self.handle_attendance_use_case,
@@ -75,114 +37,112 @@ class Registry:
     @property
     def send_reminder_use_case(self) -> SendReminderUseCase:
         return SendReminderUseCase(
-            repo=self._member_repo,
-            messenger=self._messenger,
-            provider=self._msg_service,
-            calendar=self._calendar,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            message_service=infra_registry.line_message_service,
+            message_generator=self._message_generator,
+            calendar=infra_registry.datetime_calendar_service,
+            logger=infra_registry.logger,
         )
 
     @property
     def send_summary_use_case(self) -> SendSummaryUseCase:
         return SendSummaryUseCase(
-            repo=self._member_repo,
-            messenger=self._messenger,
-            provider=self._msg_service,
-            calendar=self._calendar,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            message_service=infra_registry.line_message_service,
+            message_generator=self._message_generator,
+            calendar=infra_registry.datetime_calendar_service,
+            logger=infra_registry.logger,
         )
 
     @property
     def reset_attendance_use_case(self) -> ResetAttendanceUseCase:
         return ResetAttendanceUseCase(
-            repo=self._member_repo,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            logger=infra_registry.logger,
         )
 
     @property
     def update_played_date_use_case(self) -> UpdatePlayedDateUseCase:
         return UpdatePlayedDateUseCase(
-            repo=self._member_repo,
-            calendar=self._calendar,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            calendar=infra_registry.datetime_calendar_service,
+            logger=infra_registry.logger,
         )
 
     @property
     def insert_attendance_record_use_case(self) -> InsertAttendanceRecordUseCase:
         return InsertAttendanceRecordUseCase(
-            repo=self._record_repo,
-            logger=self.logger,
+            attendance_record_repo=infra_registry.attendance_record_repo,
+            logger=infra_registry.logger,
         )
 
     @property
     def find_top_absentees_use_case(self) -> FindTopAbsenteesUseCase:
         return FindTopAbsenteesUseCase(
-            repo=self._record_repo,
-            logger=self.logger,
+            attendance_record_repo=infra_registry.attendance_record_repo,
+            logger=infra_registry.logger,
         )
 
     @property
     def find_attendance_record_use_case(self) -> FindAttendanceRecordUseCase:
         return FindAttendanceRecordUseCase(
-            repo=self._record_repo,
-            logger=self.logger,
+            attendance_record_repo=infra_registry.attendance_record_repo,
+            logger=infra_registry.logger,
         )
 
-    @property
+    @cached_property
     def dispatcher(self) -> IntentDispatcher:
         return IntentDispatcher(
             registry=self,
-            member_repo=self._member_repo,
-            messenger=self._messenger,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            message_service=infra_registry.line_message_service,
+            logger=infra_registry.logger,
         )
 
     @property
     def handle_attendance_use_case(self) -> HandleAttendanceUseCase:
         return HandleAttendanceUseCase(
-            member_repo=self._member_repo,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            logger=infra_registry.logger,
         )
 
     @property
     def register_member_use_case(self) -> RegisterMemberUseCase:
         return RegisterMemberUseCase(
-            member_repo=self._member_repo,
-            messenger=self._messenger,
-            line_api_service=self.line_api_service,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            message_service=infra_registry.line_message_service,
+            api_service=infra_registry.line_api_service,
+            logger=infra_registry.logger,
         )
 
     @property
     def query_stat_use_case(self) -> QueryStatUseCase:
         return QueryStatUseCase(
-            member_repo=self._member_repo,
-            message_repo=self._member_repo,
-            messenger=self._messenger,
-            provider=self._msg_service,
-            calendar=self._calendar,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            message_service=infra_registry.line_message_service,
+            message_generator=self._message_generator,
+            calendar=infra_registry.datetime_calendar_service,
+            logger=infra_registry.logger,
         )
 
     @property
     def notify_again_use_case(self) -> NotifyAgainUseCase:
         return NotifyAgainUseCase(
-            member_repo=self._member_repo,
-            message_repo=self._member_repo,
-            messenger=self._messenger,
-            provider=self._msg_service,
-            calendar=self._calendar,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            message_service=infra_registry.line_message_service,
+            message_generator=self._message_generator,
+            calendar=infra_registry.datetime_calendar_service,
+            logger=infra_registry.logger,
         )
 
     @property
     def send_top_absentee_use_case(self) -> SendTopAbsenteeUseCase:
         return SendTopAbsenteeUseCase(
-            member_repo=self._member_repo,
-            absentee_repo=self._record_repo,
-            messenger=self._messenger,
-            provider=self._msg_service,
-            logger=self.logger,
+            member_profile_repo=infra_registry.member_profile_repo,
+            absentee_repo=infra_registry.attendance_record_repo,
+            message_service=infra_registry.line_message_service,
+            message_generator=self._message_generator,
+            logger=infra_registry.logger,
         )
 
     def get_use_case_by_intent(self, intent: UserIntent):
@@ -191,6 +151,3 @@ class Registry:
         if use_case:
             return use_case()
         return None
-
-
-registry = Registry()

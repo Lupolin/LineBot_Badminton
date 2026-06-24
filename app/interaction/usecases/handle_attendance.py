@@ -1,37 +1,34 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.interaction.entities import (
+from domain.entity import (
     MemberInfo,
     UserIntent,
 )
-from domain.interaction.repository import UpdateMemberInfoRepository
+from domain.repository import MemberProfileRepository
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
 class HandleAttendanceUseCase:
-    member_repo: UpdateMemberInfoRepository
+    member_profile_repo: MemberProfileRepository
     logger: Logger
 
     @trace_method("UseCase: HandleAttendanceUseCase")  #
     async def execute(
-            self,
-            user_id: str,
-            user_content: str,
-            reply_token: str,
-            intent: UserIntent,
-            member: MemberInfo,
+        self,
+        user_id: str,
+        user_content: str,
+        reply_token: str,
+        intent: UserIntent,
+        member: MemberInfo,
     ) -> str:
         try:
             self.logger.info(f"Executing HandleAttendanceUseCase | User: {user_id} | Intent: {intent.name}")
 
-            member.update_attendance(
-                intent=intent,
-                user_content=user_content
-            )
+            member.update_attendance(intent=intent, user_content=user_content)
 
-            await self.member_repo.save(member)
+            await self.member_profile_repo.save(member)
 
             self.logger.info(f"Attendance update process finished for user: {user_id}")
             return "Handle attendance process successful"

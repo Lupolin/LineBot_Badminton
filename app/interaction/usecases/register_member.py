@@ -1,23 +1,23 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.interaction.entities import (
+from domain.entity import (
     MemberInfo,
     UserIntent,
 )
-from domain.interaction.repository import UpdateMemberInfoRepository
-from infrastructure.common import (
-    LineApiService,
-    LineMessageService,
+from domain.gateway import (
+    ApiService,
+    MessageService,
 )
+from domain.repository import MemberProfileRepository
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
 class RegisterMemberUseCase:
-    member_repo: UpdateMemberInfoRepository
-    messenger: LineMessageService
-    line_api_service: LineApiService
+    member_profile_repo: MemberProfileRepository
+    message_service: MessageService
+    api_service: ApiService
     logger: Logger
 
     @trace_method("UseCase: RegisterMemberUseCase")
@@ -36,7 +36,7 @@ class RegisterMemberUseCase:
         message = "偷偷跟你說喔！你是我的管理員了❤️" if is_admin_request else "註冊好了！\n我再也不會忘記你了！"
 
         try:
-            user_name = await self.line_api_service.get_user_name(user_id)
+            user_name = await self.api_service.get_user_name(user_id)
 
             member = MemberInfo(
                 user_id=user_id,
@@ -52,10 +52,10 @@ class RegisterMemberUseCase:
                 user_content=user_content,
             )
 
-            await self.member_repo.save(member)
+            await self.member_profile_repo.save(member)
 
             if reply_token:
-                await self.messenger.reply_message(
+                await self.message_service.reply_message(
                     reply_token=reply_token,
                     message=message,
                 )

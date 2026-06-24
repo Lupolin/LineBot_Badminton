@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.routine.repository import GetMemberInfoRepository
+from domain.repository import MemberProfileRepository
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
 class ResetAttendanceUseCase:
-    repo: GetMemberInfoRepository
+    member_profile_repo: MemberProfileRepository
     logger: Logger
 
     @trace_method("UseCase: ResetAttendanceUseCase")
@@ -15,7 +15,7 @@ class ResetAttendanceUseCase:
         self.logger.info("Starting attendance reset process for all members")
 
         try:
-            await self.repo.reset_all_attendance()
+            await self.member_profile_repo.reset_all_attendance()
 
             self.logger.info("Attendance reset process finished")
 

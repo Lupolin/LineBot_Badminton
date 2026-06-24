@@ -1,23 +1,27 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.interaction.entities import (
+from domain.entity import (
     MemberInfo,
     UserIntent,
 )
-from domain.interaction.repository import UpdateMemberInfoRepository
-from domain.routine import MessageService
-from domain.routine.repository import AttendanceRecordRepository
-from infrastructure.common import LineMessageService
+from domain.gateway import (
+    MessageService,
+)
+from domain.repository import (
+    AttendanceRecordRepository,
+    MemberProfileRepository,
+)
+from domain.service import MessageGenerator
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
 class SendTopAbsenteeUseCase:
-    member_repo: UpdateMemberInfoRepository
+    member_profile_repo: MemberProfileRepository
     absentee_repo: AttendanceRecordRepository
-    messenger: LineMessageService
-    provider: MessageService
+    message_service: MessageService
+    message_generator: MessageGenerator
     logger: Logger
 
     @trace_method("UseCase: SendTopAbsenteeUseCase")
@@ -42,12 +46,12 @@ class SendTopAbsenteeUseCase:
 
             self.logger.info(f"Retrieved {len(top_absentee_list)} absentees from repository")
 
-            message = self.provider.get_attendance_result_message(top_absentee_list)
+            message = self.message_generator.get_attendance_result_message(top_absentee_list)
 
-            await self.member_repo.save(member)
+            await self.member_profile_repo.save(member)
 
             if reply_token:
-                await self.messenger.reply_message(
+                await self.message_service.reply_message(
                     reply_token=reply_token,
                     message=message,
                 )

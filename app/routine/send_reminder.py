@@ -1,22 +1,20 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.routine import (
-    GetMemberInfoRepository,
+from domain.gateway import (
+    DateTimeCalendarService,
     MessageService,
 )
-from infrastructure.common import (
-    DateTimeCalendarService,
-    LineMessageService,
-)
+from domain.repository import MemberProfileRepository
+from domain.service import MessageGenerator
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
 class SendReminderUseCase:
-    repo: GetMemberInfoRepository
-    messenger: LineMessageService
-    provider: MessageService
+    member_profile_repo: MemberProfileRepository
+    message_service: MessageService
+    message_generator: MessageGenerator
     calendar: DateTimeCalendarService
     logger: Logger
 
@@ -28,9 +26,9 @@ class SendReminderUseCase:
 
             self.logger.info(f"Starting reminder process for game ({played_date}) | Today is {today_name}.")
 
-            pending_members = await self.repo.get_pending_members()
+            pending_members = await self.member_profile_repo.get_pending_members()
 
-            reminder_message = self.provider.get_reminder_message(
+            reminder_message = self.message_generator.get_reminder_message(
                 played_date=played_date,
                 today_name=today_name,
             )
@@ -38,15 +36,14 @@ class SendReminderUseCase:
             success_count = 0
             for member in pending_members:
                 try:
-                    await self.messenger.push_message(
+                    await self.message_service.push_message(
                         member.user_id,
                         reminder_message,
                     )
                     success_count += 1
                 except Exception as e:
                     self.logger.error(
-                        f"Failed to push message to {member.user_id} | Error: {type(e).__name__}",
-                        exc_info=True
+                        f"Failed to push message to {member.user_id} | Error: {type(e).__name__}", exc_info=True
                     )
 
             self.logger.info(f"Reminder process finished. Sent: {success_count}/{len(pending_members)}")

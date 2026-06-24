@@ -1,28 +1,24 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.interaction.entities import (
+from domain.entity import (
     MemberInfo,
     UserIntent,
 )
-from domain.interaction.repository import UpdateMemberInfoRepository
-from domain.routine import (
+from domain.gateway import (
+    DateTimeCalendarService,
     MessageService,
 )
-from domain.routine.repository import GetMemberInfoRepository
-from infrastructure.common import (
-    DateTimeCalendarService,
-    LineMessageService,
-)
+from domain.repository import MemberProfileRepository
+from domain.service import MessageGenerator
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
 class NotifyAgainUseCase:
-    member_repo: UpdateMemberInfoRepository
-    message_repo: GetMemberInfoRepository
-    messenger: LineMessageService
-    provider: MessageService
+    member_profile_repo: MemberProfileRepository
+    message_service: MessageService
+    message_generator: MessageGenerator
     calendar: DateTimeCalendarService
     logger: Logger
 
@@ -45,17 +41,17 @@ class NotifyAgainUseCase:
 
             played_date = self.calendar.get_played_date()
             today_name = self.calendar.get_today_name()
-            pending_members = await self.message_repo.get_pending_members()
+            pending_members = await self.member_profile_repo.get_pending_members()
 
-            reminder_message = self.provider.get_reminder_message(
+            reminder_message = self.message_generator.get_reminder_message(
                 played_date=played_date,
                 today_name=today_name,
             )
 
-            await self.member_repo.save(member)
+            await self.member_profile_repo.save(member)
 
             for m in pending_members:
-                await self.messenger.push_message(
+                await self.message_service.push_message(
                     m.user_id,
                     reminder_message,
                 )

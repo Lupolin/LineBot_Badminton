@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.routine.repository import AttendanceRecordRepository
+from domain.repository import AttendanceRecordRepository
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
 class FindTopAbsenteesUseCase:
-    repo: AttendanceRecordRepository
+    attendance_record_repo: AttendanceRecordRepository
     logger: Logger
 
     @trace_method("UseCase: FindTopAbsenteesUseCase")
@@ -15,7 +15,7 @@ class FindTopAbsenteesUseCase:
         self.logger.info("Starting find top absentees process.")
 
         try:
-            result = await self.repo.find_top_absentees()
+            result = await self.attendance_record_repo.find_top_absentees()
 
             self.logger.info("Find top absentees process finished.")
             return result
