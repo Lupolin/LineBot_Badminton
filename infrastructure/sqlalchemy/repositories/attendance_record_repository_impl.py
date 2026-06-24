@@ -5,11 +5,11 @@ from logging import Logger
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.routine.entities import (
+from domain.entity import (
     Absentee,
     Attendance,
 )
-from domain.routine.repository import AttendanceRecordRepository
+from domain.repository import AttendanceRecordRepository
 from infrastructure.opentelemetry import trace_method
 from infrastructure.sqlalchemy import SQLAlchemyContext, transaction_scope_async
 from infrastructure.sqlalchemy.models import (
@@ -40,10 +40,7 @@ class AttendanceRecordRepositoryImpl(AttendanceRecordRepository):
     @trace_method("Infra: AttendanceRecordRepository.get_all_data")
     @transaction_scope_async
     async def get_all_data(self, session: AsyncSession) -> list[Attendance]:
-        stmt = (
-            select(MemberProfile)
-            .where(MemberProfile.status == "ACTIVE")
-        )
+        stmt = select(MemberProfile).where(MemberProfile.status == "ACTIVE")
         result = await session.execute(stmt)
         db_members = result.scalars().all()
 
@@ -89,12 +86,7 @@ class AttendanceRecordRepositoryImpl(AttendanceRecordRepository):
         top_three = counts.most_common(3)
         user_names = {r.user_id: r.user_name for r in all_data}
 
-        result = [
-            Absentee(
-                user_name=user_names.get(uid, "Unknown"),
-                absent_count=count
-            ) for uid, count in top_three
-        ]
+        result = [Absentee(user_name=user_names.get(uid, "Unknown"), absent_count=count) for uid, count in top_three]
 
         self.logger.info(f"Successfully found {len(result)} top absentees.")
         return result

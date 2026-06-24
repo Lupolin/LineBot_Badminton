@@ -15,12 +15,12 @@ from linebot.v3.messaging.models import (
     TextMessage,
 )
 
-from infrastructure.common import LineMessageService
+from domain.gateway import MessageService
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
-class LineMessageServiceImpl(LineMessageService):
+class LineMessageServiceImpl(MessageService):
     message_api: AsyncMessagingApi = field(init=False)
     access_token: str
     logger: Logger
@@ -51,9 +51,9 @@ class LineMessageServiceImpl(LineMessageService):
 
     @trace_method("Infra: LineMessageServiceImpl.reply_message")
     async def reply_message(
-            self,
-            reply_token: str,
-            message: str,
+        self,
+        reply_token: str,
+        message: str,
     ):
         """
         使用 reply_token 進行免費回覆

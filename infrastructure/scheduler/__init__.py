@@ -1,2 +1,1 @@
-from .factory import SchedulerFactory
-from .manager import SchedulerService
+from .scheduler_service import SchedulerService

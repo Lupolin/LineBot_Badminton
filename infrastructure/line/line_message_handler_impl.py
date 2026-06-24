@@ -1,17 +1,17 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.routine.entities import LineMessageEvent
-from infrastructure.common import LineMessageHandler
+from domain.entity import MessageEvent
+from domain.gateway import MessageHandler
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
-class LineMessageHandlerImpl(LineMessageHandler):
+class LineMessageHandlerImpl(MessageHandler):
     logger: Logger
 
     @trace_method("Infra: LineAdapterImpl.parse_webhook_body")
-    async def parse_webhook_body(self, body: dict) -> list[LineMessageEvent]:
+    async def parse_webhook_body(self, body: dict) -> list[MessageEvent]:
         events = body.get("events", [])
         parsed_events = []
 
@@ -23,7 +23,7 @@ class LineMessageHandlerImpl(LineMessageHandler):
                     token = event["replyToken"]
 
                     parsed_events.append(
-                        LineMessageEvent(
+                        MessageEvent(
                             user_id=str(user_id),
                             user_content=str(content).strip(),
                             reply_token=str(token),

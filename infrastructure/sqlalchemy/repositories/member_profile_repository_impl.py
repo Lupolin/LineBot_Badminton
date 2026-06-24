@@ -7,32 +7,24 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.interaction.entities import MemberInfo
-from domain.interaction.repository import UpdateMemberInfoRepository
-from domain.routine.entities import Admin, Member
-from domain.routine.repository import GetMemberInfoRepository
+from domain.entity import Admin, MemberInfo
+from domain.repository import MemberProfileRepository
 from infrastructure.opentelemetry import trace_method
 from infrastructure.sqlalchemy import SQLAlchemyContext, transaction_scope_async
 from infrastructure.sqlalchemy.models import MemberProfile
 
 
 @dataclass
-class MemberRepositoryImpl(
-    GetMemberInfoRepository,
-    UpdateMemberInfoRepository,
-):
+class MemberRepositoryImpl(MemberProfileRepository):
     session_factory: SQLAlchemyContext
     logger: Logger
 
     @trace_method("Infra: MemberRepository.get_pending_members")
     @transaction_scope_async
-    async def get_pending_members(self, session: AsyncSession) -> list[Member]:
-        stmt = (
-            select(MemberProfile)
-            .where(
-                MemberProfile.is_attending.is_(None),
-                MemberProfile.status == "ACTIVE",
-            )
+    async def get_pending_members(self, session: AsyncSession) -> list[MemberInfo]:
+        stmt = select(MemberProfile).where(
+            MemberProfile.is_attending.is_(None),
+            MemberProfile.status == "ACTIVE",
         )
         result = await session.execute(stmt)
         members = result.scalars().all()
@@ -40,25 +32,22 @@ class MemberRepositoryImpl(
         self.logger.info(f"Retrieved pending members | Count: {len(members)}")
 
         return [
-            Member(
+            MemberInfo(
                 user_id=m.user_id,
                 user_name=m.user_name,
+                user_content=m.user_content,
                 is_attending=m.is_attending,
-                played_date=m.played_date,
             )
             for m in members
         ]
 
     @trace_method("Infra: MemberRepository.get_attending_members")
     @transaction_scope_async
-    async def get_attending_members(self, session: AsyncSession) -> list[Member]:
-        stmt = (
-            select(MemberProfile)
-            .where(
-                MemberProfile.last_replied_at.isnot(None),
-                MemberProfile.is_attending.is_(True),
-                MemberProfile.status == "ACTIVE",
-            )
+    async def get_attending_members(self, session: AsyncSession) -> list[MemberInfo]:
+        stmt = select(MemberProfile).where(
+            MemberProfile.last_replied_at.isnot(None),
+            MemberProfile.is_attending.is_(True),
+            MemberProfile.status == "ACTIVE",
         )
         result = await session.execute(stmt)
         members = result.scalars().all()
@@ -66,25 +55,22 @@ class MemberRepositoryImpl(
         self.logger.info(f"Retrieved attending members | Count: {len(members)}")
 
         return [
-            Member(
+            MemberInfo(
                 user_id=m.user_id,
                 user_name=m.user_name,
+                user_content=m.user_content,
                 is_attending=m.is_attending,
-                played_date=m.played_date,
             )
             for m in members
         ]
 
     @trace_method("Infra: MemberRepository.get_not_attending_members")
     @transaction_scope_async
-    async def get_not_attending_members(self, session: AsyncSession) -> list[Member]:
-        stmt = (
-            select(MemberProfile)
-            .where(
-                MemberProfile.last_replied_at.isnot(None),
-                MemberProfile.is_attending.is_(False),
-                MemberProfile.status == "ACTIVE",
-            )
+    async def get_not_attending_members(self, session: AsyncSession) -> list[MemberInfo]:
+        stmt = select(MemberProfile).where(
+            MemberProfile.last_replied_at.isnot(None),
+            MemberProfile.is_attending.is_(False),
+            MemberProfile.status == "ACTIVE",
         )
         result = await session.execute(stmt)
         members = result.scalars().all()
@@ -92,11 +78,11 @@ class MemberRepositoryImpl(
         self.logger.info(f"Retrieved not attending members | Count: {len(members)}")
 
         return [
-            Member(
+            MemberInfo(
                 user_id=m.user_id,
                 user_name=m.user_name,
+                user_content=m.user_content,
                 is_attending=m.is_attending,
-                played_date=m.played_date,
             )
             for m in members
         ]
@@ -104,12 +90,9 @@ class MemberRepositoryImpl(
     @trace_method("Infra: MemberRepository.get_admin_members")
     @transaction_scope_async
     async def get_admin_members(self, session: AsyncSession) -> list[Admin]:
-        stmt = (
-            select(MemberProfile)
-            .where(
-                MemberProfile.role == "Admin",
-                MemberProfile.status == "ACTIVE",
-            )
+        stmt = select(MemberProfile).where(
+            MemberProfile.role == "Admin",
+            MemberProfile.status == "ACTIVE",
         )
         result = await session.execute(stmt)
         members = result.scalars().all()
@@ -127,11 +110,7 @@ class MemberRepositoryImpl(
     @trace_method("Infra: MemberRepository.update_played_date")
     @transaction_scope_async
     async def update_played_date(self, session: AsyncSession, played_date: str) -> None:
-        stmt = (
-            update(MemberProfile)
-            .values(played_date=played_date)
-            .returning(MemberProfile.id)
-        )
+        stmt = update(MemberProfile).values(played_date=played_date).returning(MemberProfile.id)
         result = await session.execute(stmt)
         affected_rows = result.scalars().all()
 
@@ -161,10 +140,7 @@ class MemberRepositoryImpl(
     @trace_method("Infra: MemberRepository.save")
     @transaction_scope_async
     async def save(self, session: AsyncSession, member: MemberInfo) -> None:
-        stmt = (
-            select(MemberProfile)
-            .where(MemberProfile.user_id == member.user_id)
-        )
+        stmt = select(MemberProfile).where(MemberProfile.user_id == member.user_id)
         result = await session.execute(stmt)
         db_member = result.scalar_one_or_none()
 
@@ -194,10 +170,7 @@ class MemberRepositoryImpl(
     @trace_method("Infra: MemberRepository.find_by_id")
     @transaction_scope_async
     async def find_by_id(self, session: AsyncSession, user_id: str) -> MemberInfo | None:
-        stmt = (
-            select(MemberProfile)
-            .where(MemberProfile.user_id == user_id)
-        )
+        stmt = select(MemberProfile).where(MemberProfile.user_id == user_id)
         result = await session.execute(stmt)
         db_member = result.scalar_one_or_none()
 

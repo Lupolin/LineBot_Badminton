@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 from logging import Logger
 
-from infrastructure.common import DateTimeCalendarService
+from domain.gateway import DateTimeCalendarService
 from infrastructure.opentelemetry import trace_method
 
 

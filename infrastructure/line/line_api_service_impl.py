@@ -2,14 +2,14 @@ from dataclasses import dataclass
 from logging import Logger
 from typing import ClassVar
 
-from infrastructure.common import LineApiService
+from domain.gateway import ApiService
 from infrastructure.http import HttpContext
 from infrastructure.opentelemetry import trace_method
 from infrastructure.setting import config
 
 
 @dataclass
-class LineApiServiceImpl(LineApiService):
+class LineApiServiceImpl(ApiService):
     logger: Logger
     http: HttpContext
     _headers: ClassVar[dict[str, str]] = {
@@ -38,10 +38,7 @@ class LineApiServiceImpl(LineApiService):
     @trace_method("Infra: LineApiServiceImpl.reply_message")
     async def reply_message(self, reply_token: str, reply_content: str) -> None:
         url = config.LINE_BOT.REPLY_ENDPOINT
-        payload = {
-            "replyToken": reply_token,
-            "messages": [{"type": "text", "text": reply_content}]
-        }
+        payload = {"replyToken": reply_token, "messages": [{"type": "text", "text": reply_content}]}
 
         try:
             session = await self.http.get_session()
