@@ -15,6 +15,7 @@ class MemberInfo:
     role: str = "Member"
     status: str | None = None
     intent: str | None = None
+    played_date: str | None = None
     is_attending: bool | None = None
     last_replied_at: datetime | None = field(default_factory=datetime.now)
 

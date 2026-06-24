@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class LineMessageEvent:
+class MessageEvent:
     user_id: str
     user_content: str
     reply_token: str

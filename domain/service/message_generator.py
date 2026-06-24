@@ -1,18 +1,17 @@
 from dataclasses import dataclass
 
-from domain.routine.entities import (
+from domain.entity import (
     Absentee,
     BadmintonMessages,
-    Member,
+    MemberInfo,
 )
 from infrastructure.opentelemetry import trace_method
 from infrastructure.setting import config
 
 
 @dataclass
-class MessageService:
+class MessageGenerator:
     messages: BadmintonMessages
-    timezone: str
 
     @trace_method("Service: MessageService.get_reminder_message")
     def get_reminder_message(
@@ -33,13 +32,13 @@ class MessageService:
             location=config.MESSAGE.LOCATION,
         )
 
-    @trace_method("Service: MessageService.get_summary_message")
+    @trace_method("Service: MessageGenerator.get_summary_message")
     def get_summary_message(
         self,
         played_date: str,
-        attending_members: list[Member],
-        not_attending_members: list[Member],
-        pending_members: list[Member],
+        attending_members: list[MemberInfo],
+        not_attending_members: list[MemberInfo],
+        pending_members: list[MemberInfo],
     ) -> str:
         attending_str = self._format_member_list(attending_members)
         not_attending_str = self._format_member_list(not_attending_members)
@@ -53,7 +52,7 @@ class MessageService:
             pending_members=pending_str,
         )
 
-    @trace_method("Service: MessageService.get_attendance_result_message")
+    @trace_method("Service: MessageGenerator.get_attendance_result_message")
     def get_attendance_result_message(
         self,
         absentee: list[Absentee],
@@ -61,11 +60,7 @@ class MessageService:
         if not absentee:
             return "目前沒有請假王喔！大家都好乖～"
 
-        display_data = {
-            "champion": "從缺",
-            "runner_up": "從缺",
-            "second_runner_up": "從缺"
-        }
+        display_data = {"champion": "從缺", "runner_up": "從缺", "second_runner_up": "從缺"}
 
         keys = ["champion", "runner_up", "second_runner_up"]
 
@@ -75,7 +70,7 @@ class MessageService:
         return self.messages.TOP_ABSENTEES_TEMPLATE.format(**display_data)
 
     @staticmethod
-    def _format_member_list(members: list[Member]) -> str:
+    def _format_member_list(members: list[MemberInfo]) -> str:
         if not members:
             return "（無）"
 

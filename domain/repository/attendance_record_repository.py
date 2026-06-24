@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from domain.routine.entities import (
+from domain.entity import (
     Absentee,
     Attendance,
 )
