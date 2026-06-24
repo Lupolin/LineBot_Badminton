@@ -1,4 +1,4 @@
-from app.registry import registry
+from app import registry
 from infrastructure.response.schemas import ApiResponse
 
 
