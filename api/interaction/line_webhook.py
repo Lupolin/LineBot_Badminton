@@ -5,6 +5,7 @@ from fastapi import (
 )
 
 from app import registry as app_regsitry
+from app.interaction.dispatcher import IntentDispatcherCommand
 from infrastructure import registry as infra_regsitry
 
 
@@ -19,9 +20,11 @@ async def line_webhook(
     for event in events:
         background_tasks.add_task(
             app_regsitry.dispatcher.execute,
-            user_id=event.user_id,
-            user_content=event.user_content,
-            reply_token=event.reply_token,
+            IntentDispatcherCommand(
+                user_id=event.user_id,
+                user_content=event.user_content,
+                reply_token=event.reply_token,
+            ),
         )
 
     return "OK"

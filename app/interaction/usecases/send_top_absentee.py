@@ -1,10 +1,6 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.entity import (
-    MemberInfo,
-    UserIntent,
-)
 from domain.gateway import (
     MessageService,
 )
@@ -14,6 +10,8 @@ from domain.repository import (
 )
 from domain.service import MessageGenerator
 from infrastructure.opentelemetry import trace_method
+
+from ..dispatcher import UseCaseCommand
 
 
 @dataclass
@@ -25,21 +23,9 @@ class SendTopAbsenteeUseCase:
     logger: Logger
 
     @trace_method("UseCase: SendTopAbsenteeUseCase")
-    async def execute(
-        self,
-        user_id: str,
-        user_content: str,
-        reply_token: str,
-        intent: UserIntent,
-        member: MemberInfo,
-    ) -> str:
+    async def execute(self, cmd: UseCaseCommand) -> str:
         try:
-            self.logger.info(f"Executing SendTopAbsenteeUseCase | User: {user_id} | Intent: {intent.name}")
-
-            member.update_info(
-                intent=intent,
-                user_content=user_content,
-            )
+            self.logger.info(f"Executing SendTopAbsenteeUseCase | User: {cmd.user_id} | Intent: {cmd.intent}")
 
             raw_list = await self.absentee_repo.find_top_absentees()
             top_absentee_list = raw_list if raw_list is not None else []
@@ -48,11 +34,12 @@ class SendTopAbsenteeUseCase:
 
             message = self.message_generator.get_attendance_result_message(top_absentee_list)
 
-            await self.member_profile_repo.save(member)
+            assert cmd.member is not None
+            await self.member_profile_repo.save(cmd.member)
 
-            if reply_token:
+            if cmd.reply_token:
                 await self.message_service.reply_message(
-                    reply_token=reply_token,
+                    reply_token=cmd.reply_token,
                     message=message,
                 )
 
@@ -61,8 +48,8 @@ class SendTopAbsenteeUseCase:
 
         except Exception as e:
             self.logger.error(
-                f"UseCase Error [{type(e).__name__}]: Failed to send top absentee message to {user_id} - {str(e)}",
+                f"UseCase Error [{type(e).__name__}]: Failed to send top absentee message to {cmd.user_id} - {str(e)}",
                 f"Failed to send top absentee message to user: {e}",
                 exc_info=True,
             )
-            return f"Failed to send top absentee message to user | UserId = {user_id}"
+            return f"Failed to send top absentee message to user | UserId = {cmd.user_id}"

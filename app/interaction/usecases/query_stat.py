@@ -1,10 +1,6 @@
 from dataclasses import dataclass
 from logging import Logger
 
-from domain.entity import (
-    MemberInfo,
-    UserIntent,
-)
 from domain.gateway import (
     DateTimeCalendarService,
     MessageService,
@@ -12,6 +8,8 @@ from domain.gateway import (
 from domain.repository import MemberProfileRepository
 from domain.service import MessageGenerator
 from infrastructure.opentelemetry import trace_method
+
+from ..dispatcher import UseCaseCommand
 
 
 @dataclass
@@ -23,21 +21,9 @@ class QueryStatUseCase:
     logger: Logger
 
     @trace_method("UseCase: QueryStatUseCase")
-    async def execute(
-        self,
-        user_id: str,
-        user_content: str,
-        reply_token: str,
-        intent: UserIntent,
-        member: MemberInfo,
-    ) -> str:
+    async def execute(self, cmd: UseCaseCommand) -> str:
         try:
-            self.logger.info(f"Executing QueryStatUseCase | User: {user_id} | Intent: {intent.name}")
-
-            member.update_info(
-                intent=intent,
-                user_content=user_content,
-            )
+            self.logger.info(f"Executing QueryStatUseCase | User: {cmd.user_id} | Intent: {cmd.intent}")
 
             played_date = self.calendar.get_played_date()
             attending_members = await self.member_profile_repo.get_attending_members()
@@ -51,20 +37,21 @@ class QueryStatUseCase:
                 pending_members=pending_members,
             )
 
-            await self.member_profile_repo.save(member)
+            assert cmd.member is not None
+            await self.member_profile_repo.save(cmd.member)
 
-            if reply_token:
+            if cmd.reply_token:
                 await self.message_service.reply_message(
-                    reply_token=reply_token,
+                    reply_token=cmd.reply_token,
                     message=message,
                 )
 
-            self.logger.info(f"Query Stat process finished for user: {user_id}")
+            self.logger.info(f"Query Stat process finished for user: {cmd.user_id}")
             return message
 
         except Exception as e:
             self.logger.error(
-                f"UseCase Error [{type(e).__name__}]: Failed to handle querying stats for {user_id} - {str(e)}",
+                f"UseCase Error [{type(e).__name__}]: Failed to handle querying stats for {cmd.user_id} - {str(e)}",
                 exc_info=True,
             )
             return "Failed to handle querying stats"
