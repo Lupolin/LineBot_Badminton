@@ -26,6 +26,8 @@ opentelemetry-instrumentation-fastapi = "==0.60b1"
 mypy = "1.18.2"
 ruff = "0.14.1"
 httpx = "*"
+pytest = "*"
+pytest-asyncio = "*"
 
 [requires]
 python_version = "3.11"
