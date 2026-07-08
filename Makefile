@@ -7,5 +7,8 @@ local-env-rm:
 lint:
 	source .venv/bin/activate && ruff check . && mypy .
 
+unit-test:
+	pytest tests/unit --log-cli-level=INFO -s
+
 format:
 	source .venv/bin/activate && ruff format .
