@@ -12,12 +12,9 @@ __pycache__/
 .coverage
 htmlcov/
 
-.env
-*.secrets.json
-users_config.json
-
 .venv/
 venv/
-env/
+.env*
+!.env.example
 
 .fly/

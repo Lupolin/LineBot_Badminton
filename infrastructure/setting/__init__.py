@@ -1,3 +1,3 @@
 from .config import Config
 
-config = Config()
+config = Config.from_env()

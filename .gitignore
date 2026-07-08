@@ -5,11 +5,8 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
-
-.env
-*.env
-*.secrets.json
-users_config.json
+.env*
+!.env.example
 
 .vscode/
 .idea/
