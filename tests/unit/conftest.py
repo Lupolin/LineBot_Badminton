@@ -22,7 +22,7 @@ from infrastructure.sqlalchemy.repositories import (
     AttendanceRecordRepositoryImpl,
     MemberRepositoryImpl,
 )
-from tests.unit.mock_data import (
+from tests.mock_data import (
     ADMIN_MEMBERS_LIST,
     ALL_ATTENDANCE_LIST,
     ATTENDING_MEMBERS_LIST,

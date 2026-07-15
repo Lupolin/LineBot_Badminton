@@ -1,7 +1,7 @@
 import pytest
 
 from app.routine import FindAttendanceRecordUseCase
-from tests.unit.mock_data import ALL_ATTENDANCE_LIST
+from tests.mock_data import ALL_ATTENDANCE_LIST
 
 
 @pytest.fixture

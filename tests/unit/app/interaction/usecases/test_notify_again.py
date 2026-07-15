@@ -8,7 +8,7 @@ from domain.entity import (
     MemberInfo,
     UserIntent,
 )
-from tests.unit.mock_data import PENDING_MEMBERS_LIST
+from tests.mock_data import PENDING_MEMBERS_LIST
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 import pytest
 
 from app.routine import FindTopAbsenteesUseCase
-from tests.unit.mock_data import TOP_ABSENTEES_LIST
+from tests.mock_data import TOP_ABSENTEES_LIST
 
 
 @pytest.fixture

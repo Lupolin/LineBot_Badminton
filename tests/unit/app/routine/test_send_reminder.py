@@ -3,7 +3,7 @@ from unittest.mock import call
 import pytest
 
 from app.routine import SendReminderUseCase
-from tests.unit.mock_data import PENDING_MEMBERS_LIST
+from tests.mock_data import PENDING_MEMBERS_LIST
 
 
 @pytest.fixture
