@@ -27,7 +27,9 @@ mypy = "1.18.2"
 ruff = "0.14.1"
 httpx = "*"
 pytest = "*"
+respx = "*"
 pytest-asyncio = "*"
+pytest-env = "*"
 
 [requires]
 python_version = "3.11"
