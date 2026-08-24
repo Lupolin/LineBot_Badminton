@@ -1,7 +1,7 @@
 import pytest
 
 from app.interaction.dispatcher import UseCaseCommand
-from app.interaction.usecases import QueryStatUseCase
+from app.interaction.use_cases import QueryStatUseCase
 from domain.entity import (
     MemberInfo,
     UserIntent,

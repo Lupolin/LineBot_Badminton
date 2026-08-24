@@ -34,9 +34,4 @@ class BadmintonMessages:
         "❓ 未回覆：\n{pending_members}"
     )
 
-    TOP_ABSENTEES_TEMPLATE: str = (
-        "請假王排序\n\n"
-        "🏆 冠軍：{champion}\n"
-        "🥈 亞軍：{runner_up}\n"
-        "🥉 季軍：{second_runner_up}"
-    )
+    TOP_ABSENTEES_TEMPLATE: str = "請假王排序\n\n🏆冠軍：{champion}\n🥈亞軍：{runner_up}\n🥉季軍：{second_runner_up}"

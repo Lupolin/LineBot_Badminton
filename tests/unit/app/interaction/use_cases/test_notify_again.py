@@ -3,7 +3,7 @@ from unittest.mock import call
 import pytest
 
 from app.interaction.dispatcher import UseCaseCommand
-from app.interaction.usecases import NotifyAgainUseCase
+from app.interaction.use_cases import NotifyAgainUseCase
 from domain.entity import (
     MemberInfo,
     UserIntent,

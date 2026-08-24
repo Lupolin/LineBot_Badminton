@@ -1,7 +1,7 @@
 from functools import cached_property
 
 from app.interaction import IntentDispatcher
-from app.interaction.usecases import (
+from app.interaction.use_cases import (
     HandleAttendanceUseCase,
     NotifyAgainUseCase,
     QueryStatUseCase,

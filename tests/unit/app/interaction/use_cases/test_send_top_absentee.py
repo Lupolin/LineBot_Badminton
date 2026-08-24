@@ -1,7 +1,7 @@
 import pytest
 
 from app.interaction.dispatcher import UseCaseCommand
-from app.interaction.usecases import SendTopAbsenteeUseCase
+from app.interaction.use_cases import SendTopAbsenteeUseCase
 from domain.entity import (
     MemberInfo,
     UserIntent,
