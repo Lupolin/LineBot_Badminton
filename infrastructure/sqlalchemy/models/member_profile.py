@@ -24,7 +24,7 @@ class MemberProfile(Base):
     user_name: Mapped[str] = mapped_column("UserName", String(40), nullable=False)
     user_content: Mapped[str] = mapped_column("UserContent", String(20), nullable=False)
     role: Mapped[str] = mapped_column("Role", String(20), nullable=False)
-    is_attending: Mapped[bool | None] = mapped_column("isAttending", Boolean, nullable=True, default=False)
+    is_attending: Mapped[bool | None] = mapped_column("isAttending", Boolean, nullable=True, default=None)
     intent: Mapped[str | None] = mapped_column("Intent", String(32), nullable=True, default=None)
     played_date: Mapped[str | None] = mapped_column("PlayedDate", String(5), nullable=True)
     status: Mapped[str | None] = mapped_column("Status", String(10), nullable=True)

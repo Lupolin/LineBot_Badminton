@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "LineBot"."MemberProfile" (
     "UserName" VARCHAR(40) NOT NULL,
     "UserContent" VARCHAR(20) NOT NULL,
     "Role" VARCHAR(20) NOT NULL,
-    "isAttending" BOOLEAN DEFAULT FALSE,
+    "isAttending" BOOLEAN DEFAULT NULL,
     "Intent" VARCHAR(32) DEFAULT NULL,
     "PlayedDate" VARCHAR(5) DEFAULT NULL,
     "Status" VARCHAR(10) DEFAULT NULL,
