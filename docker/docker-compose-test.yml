@@ -2,8 +2,8 @@ services:
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
-      - "16686:16686" # Jaeger UI
-      - "4318:4318"   # OTLP HTTP 接收點
+      - "16687:16686" # Jaeger UI
+      - "4319:4318"   # OTLP HTTP 接收點
     environment:
       - COLLECTOR_OTLP_ENABLED=true
 
@@ -13,8 +13,8 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
-      - POSTGRES_DB=TeamNova
+      - POSTGRES_DB=TestDB
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - ../migration/sqlcmd/db_init.sql:/docker-entrypoint-initdb.d/init_all.sql
