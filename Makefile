@@ -4,11 +4,22 @@ local-env:
 local-env-rm:
 	docker-compose -f docker/docker-compose-dev.yml -p dev down -v
 
+test-env:
+	docker-compose -f docker/docker-compose-test.yml -p test up --build -d
+
+test-env-rm:
+	docker-compose -f docker/docker-compose-test.yml -p test down -v
+
+format:
+	source .venv/bin/activate && ruff format .
+
 lint:
 	source .venv/bin/activate && ruff check . && mypy .
 
 unit-test:
-	pytest tests/unit --log-cli-level=INFO -s
+	source .venv/bin/activate && pytest tests/unit --log-cli-level=INFO -s
 
-format:
-	source .venv/bin/activate && ruff format .
+integration-test:
+	make test-env
+	ENV=test pytest tests/integration/
+	make test-env-rm
