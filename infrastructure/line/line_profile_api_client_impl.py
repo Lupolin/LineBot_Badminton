@@ -2,14 +2,14 @@ from dataclasses import dataclass
 from logging import Logger
 from typing import ClassVar
 
-from domain.gateway import ApiService
+from domain.gateway import ProfileApiClient
 from infrastructure.http import HttpContext
 from infrastructure.opentelemetry import trace_method
 from infrastructure.setting import config
 
 
 @dataclass
-class LineApiServiceImpl(ApiService):
+class LineProfileApiClientImpl(ProfileApiClient):
     logger: Logger
     http: HttpContext
     _headers: ClassVar[dict[str, str]] = {
@@ -17,7 +17,7 @@ class LineApiServiceImpl(ApiService):
         "Content-Type": "application/json",
     }
 
-    @trace_method("Infra: LineApiServiceImpl.get_user_name")
+    @trace_method("Infra: LineProfileApiClientImpl.get_user_name")
     async def get_user_name(self, user_id: str) -> str:
         url = f"{config.LINE_BOT.PROFILE_ENDPOINT}/{user_id}"
 
@@ -35,7 +35,7 @@ class LineApiServiceImpl(ApiService):
             self.logger.error(f"LINE API 連線異常: {str(e)}", exc_info=True)
             return user_id
 
-    @trace_method("Infra: LineApiServiceImpl.reply_message")
+    @trace_method("Infra: LineProfileApiClientImpl.reply_message")
     async def reply_message(self, reply_token: str, reply_content: str) -> None:
         url = config.LINE_BOT.REPLY_ENDPOINT
         payload = {"replyToken": reply_token, "messages": [{"type": "text", "text": reply_content}]}

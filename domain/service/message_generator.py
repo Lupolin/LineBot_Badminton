@@ -13,7 +13,7 @@ from infrastructure.setting import config
 class MessageGenerator:
     messages: BadmintonMessages
 
-    @trace_method("Service: MessageService.get_reminder_message")
+    @trace_method("Service: MessagingApiClient.get_reminder_message")
     def get_reminder_message(
         self,
         played_date: str,

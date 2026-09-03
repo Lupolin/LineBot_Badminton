@@ -5,7 +5,7 @@ from logging import Logger
 from typing import TYPE_CHECKING
 
 from domain.entity import MemberInfo, UserIntent
-from domain.gateway import MessageService
+from domain.gateway import MessagingApiClient
 from domain.repository import MemberProfileRepository
 from infrastructure.opentelemetry import trace_method
 
@@ -33,7 +33,7 @@ class UseCaseCommand:
 class IntentDispatcher:
     registry: Registry
     member_profile_repo: MemberProfileRepository
-    message_service: MessageService
+    message_service: MessagingApiClient
     logger: Logger
 
     @trace_method("UseCase: IntentDispatcher.execute")

@@ -14,9 +14,9 @@ from domain.entity import BadmintonMessages
 from domain.service import MessageGenerator
 from infrastructure.line import (
     DateTimeCalendarServiceImpl,
-    LineApiServiceImpl,
-    LineMessageHandlerImpl,
-    LineMessageServiceImpl,
+    LineMessagingApiClientImpl,
+    LineProfileApiClientImpl,
+    LineWebhookEventParserImpl,
 )
 from infrastructure.sqlalchemy.repositories import (
     AttendanceRecordRepositoryImpl,
@@ -69,8 +69,8 @@ def message_generator() -> MessageGenerator:
 
 
 @pytest.fixture
-def line_api_service_mock(logger: Logger, http: AsyncMock) -> LineApiServiceImpl:
-    service = LineApiServiceImpl(
+def line_api_service_mock(logger: Logger, http: AsyncMock) -> LineProfileApiClientImpl:
+    service = LineProfileApiClientImpl(
         logger=logger,
         http=http,
     )
@@ -82,8 +82,8 @@ def line_api_service_mock(logger: Logger, http: AsyncMock) -> LineApiServiceImpl
 
 
 @pytest.fixture
-def line_message_handler_mock(logger: Logger) -> LineMessageHandlerImpl:
-    service = LineMessageHandlerImpl(logger=logger)
+def line_message_handler_mock(logger: Logger) -> LineWebhookEventParserImpl:
+    service = LineWebhookEventParserImpl(logger=logger)
 
     service.parse_webhook_body = AsyncMock(return_value=[MESSAGE_EVENT])
 
@@ -92,7 +92,7 @@ def line_message_handler_mock(logger: Logger) -> LineMessageHandlerImpl:
 
 @pytest.fixture
 def line_message_service_mock(logger: Logger) -> Mock:
-    service = Mock(spec=LineMessageServiceImpl)
+    service = Mock(spec=LineMessagingApiClientImpl)
     service.logger = logger
 
     service.message_api = AsyncMock()

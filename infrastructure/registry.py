@@ -16,9 +16,9 @@ from infrastructure.sqlalchemy.repositories import (
 from .http import HttpContext
 from .line import (
     DateTimeCalendarServiceImpl,
-    LineApiServiceImpl,
-    LineMessageHandlerImpl,
-    LineMessageServiceImpl,
+    LineMessagingApiClientImpl,
+    LineProfileApiClientImpl,
+    LineWebhookEventParserImpl,
 )
 from .logger import setup_logger
 from .opentelemetry import (
@@ -60,19 +60,19 @@ class Registry:
         return DateTimeCalendarServiceImpl(logger=self.logger)
 
     @cached_property
-    def line_api_service(self) -> LineApiServiceImpl:
-        return LineApiServiceImpl(
+    def line_api_service(self) -> LineProfileApiClientImpl:
+        return LineProfileApiClientImpl(
             http=self.http,
             logger=self.logger,
         )
 
     @cached_property
-    def line_message_handler(self) -> LineMessageHandlerImpl:
-        return LineMessageHandlerImpl(logger=self.logger)
+    def line_message_handler(self) -> LineWebhookEventParserImpl:
+        return LineWebhookEventParserImpl(logger=self.logger)
 
     @cached_property
-    def line_message_service(self) -> LineMessageServiceImpl:
-        return LineMessageServiceImpl(
+    def line_message_service(self) -> LineMessagingApiClientImpl:
+        return LineMessagingApiClientImpl(
             logger=self.logger,
             access_token=self.config.LINE_BOT.CHANNEL_ACCESS_TOKEN,
         )

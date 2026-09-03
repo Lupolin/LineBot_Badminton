@@ -2,12 +2,12 @@ from dataclasses import dataclass
 from logging import Logger
 
 from domain.entity import MessageEvent
-from domain.gateway import MessageHandler
+from domain.gateway import WebhookEventParser
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
-class LineMessageHandlerImpl(MessageHandler):
+class LineWebhookEventParserImpl(WebhookEventParser):
     logger: Logger
 
     @trace_method("Infra: LineAdapterImpl.parse_webhook_body")

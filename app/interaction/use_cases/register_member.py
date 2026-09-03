@@ -5,8 +5,8 @@ from domain.entity import (
     MemberInfo,
 )
 from domain.gateway import (
-    ApiService,
-    MessageService,
+    MessagingApiClient,
+    ProfileApiClient,
 )
 from domain.repository import MemberProfileRepository
 from infrastructure.opentelemetry import trace_method
@@ -17,8 +17,8 @@ from ..dispatcher import UseCaseCommand
 @dataclass
 class RegisterMemberUseCase:
     member_profile_repo: MemberProfileRepository
-    message_service: MessageService
-    api_service: ApiService
+    message_service: MessagingApiClient
+    api_service: ProfileApiClient
     logger: Logger
 
     @trace_method("UseCase: RegisterMemberUseCase")

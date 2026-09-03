@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from logging import Logger
 
 from domain.gateway import (
-    MessageService,
+    MessagingApiClient,
 )
 from domain.repository import (
     AttendanceRecordRepository,
@@ -18,7 +18,7 @@ from ..dispatcher import UseCaseCommand
 class SendTopAbsenteeUseCase:
     member_profile_repo: MemberProfileRepository
     attendance_record_repo: AttendanceRecordRepository
-    message_service: MessageService
+    message_service: MessagingApiClient
     message_generator: MessageGenerator
     logger: Logger
 

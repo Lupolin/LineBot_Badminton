@@ -1,4 +1,4 @@
 from .datetime_calendar_service_impl import DateTimeCalendarServiceImpl
-from .line_api_service_impl import LineApiServiceImpl
-from .line_message_handler_impl import LineMessageHandlerImpl
-from .line_message_service_impl import LineMessageServiceImpl
+from .line_messaging_api_client_impl import LineMessagingApiClientImpl
+from .line_profile_api_client_impl import LineProfileApiClientImpl
+from .line_webhook_event_parser_impl import LineWebhookEventParserImpl

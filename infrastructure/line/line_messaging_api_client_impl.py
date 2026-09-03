@@ -15,12 +15,12 @@ from linebot.v3.messaging.models import (
     TextMessage,
 )
 
-from domain.gateway import MessageService
+from domain.gateway import MessagingApiClient
 from infrastructure.opentelemetry import trace_method
 
 
 @dataclass
-class LineMessageServiceImpl(MessageService):
+class LineMessagingApiClientImpl(MessagingApiClient):
     message_api: AsyncMessagingApi = field(init=False)
     access_token: str
     logger: Logger
@@ -30,7 +30,7 @@ class LineMessageServiceImpl(MessageService):
         api_client = AsyncApiClient(configuration=configuration)
         self.message_api = AsyncMessagingApi(api_client)
 
-    @trace_method("Infra: LineMessageServiceImpl.push_message")
+    @trace_method("Infra: LineMessagingApiClientImpl.push_message")
     async def push_message(
         self,
         user_id: str,
@@ -49,7 +49,7 @@ class LineMessageServiceImpl(MessageService):
         except Exception:
             self.logger.error(f"Failed to push message to {user_id}", exc_info=True)
 
-    @trace_method("Infra: LineMessageServiceImpl.reply_message")
+    @trace_method("Infra: LineMessagingApiClientImpl.reply_message")
     async def reply_message(
         self,
         reply_token: str,

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class ApiService(ABC):
+class ProfileApiClient(ABC):
     @abstractmethod
     async def get_user_name(self, user_id: str) -> str:
         pass

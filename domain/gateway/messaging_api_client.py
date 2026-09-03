@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class MessageService(ABC):
+class MessagingApiClient(ABC):
     @abstractmethod
     async def push_message(self, user_id: str, message: str):
         pass

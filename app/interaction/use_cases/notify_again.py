@@ -3,7 +3,7 @@ from logging import Logger
 
 from domain.gateway import (
     DateTimeCalendarService,
-    MessageService,
+    MessagingApiClient,
 )
 from domain.repository import MemberProfileRepository
 from domain.service import MessageGenerator
@@ -15,7 +15,7 @@ from ..dispatcher import UseCaseCommand
 @dataclass
 class NotifyAgainUseCase:
     member_profile_repo: MemberProfileRepository
-    message_service: MessageService
+    message_service: MessagingApiClient
     message_generator: MessageGenerator
     calendar: DateTimeCalendarService
     logger: Logger
