@@ -1,11 +1,10 @@
 import pytest
 
-from app.interaction.dispatcher import UseCaseCommand
 from app.interaction.use_cases import SendTopAbsenteeUseCase
 from domain.entity import (
-    MemberInfo,
     UserIntent,
 )
+from tests.mock_data import make_test_member, make_use_case_command
 
 
 @pytest.fixture
@@ -18,7 +17,7 @@ def send_top_absentee_use_case(
 ):
     return SendTopAbsenteeUseCase(
         member_profile_repo=member_profile_repo_mock,
-        absentee_repo=attendance_record_repo_mock,
+        attendance_record_repo=attendance_record_repo_mock,
         message_service=line_message_service_mock,
         message_generator=message_generator,
         logger=logger,
@@ -34,24 +33,17 @@ async def test_send_top_absentee_success(
     message_generator,
     logger,
 ):
-    test_command = UseCaseCommand(
-        user_id="U001",
-        user_content="誰是請假王",
-        intent=UserIntent.NOTIFY_AGAIN,
-        member=MemberInfo(
-            user_id="U001",
-            user_name="Lucas",
-            user_content="誰是請假王",
-            role="Member",
-            is_attending=None,
-        ),
-        reply_token="fake_token",
-    )
+    test_member = make_test_member()
+    test_member.user_content = "誰是請假王"
+    test_command = make_use_case_command()
+    test_command.user_content = test_member.user_content
+    test_command.intent = UserIntent.ABSENTEE
+    test_command.member = test_member
 
-    result = await send_top_absentee_use_case.execute(test_command)
+    result = await send_top_absentee_use_case.execute(cmd=test_command)
 
     attendance_record_repo_mock.find_top_absentees.assert_awaited_once_with()
-    member_profile_repo_mock.save.assert_awaited_once_with(test_command.member)
+    member_profile_repo_mock.save.assert_awaited_once_with(member=test_command.member)
 
     raw_list = attendance_record_repo_mock.find_top_absentees.return_value
     top_absentee_list = raw_list if raw_list is not None else []

@@ -1,11 +1,10 @@
 import pytest
 
-from app.interaction.dispatcher import UseCaseCommand
 from app.interaction.use_cases import HandleAttendanceUseCase
 from domain.entity import (
-    MemberInfo,
     UserIntent,
 )
+from tests.mock_data import make_test_member, make_use_case_command
 
 
 @pytest.fixture
@@ -22,24 +21,17 @@ async def test_handle_attendance_success(
     member_profile_repo_mock,
     logger,
 ):
-    test_command = UseCaseCommand(
-        user_id="U001",
-        user_content="+1",
-        intent=UserIntent.ATTEND,
-        member=MemberInfo(
-            user_id="U001",
-            user_name="Lucas",
-            user_content="+1",
-            role="Member",
-            is_attending=None,
-        ),
-        reply_token="fake_token",
-    )
+    test_member = make_test_member()
+    test_member.user_content = "+1"
+    test_command = make_use_case_command()
+    test_command.user_content = test_member.user_content
+    test_command.intent = UserIntent.ATTEND
+    test_command.member = test_member
 
-    result = await handle_attendance_use_case.execute(test_command)
+    result = await handle_attendance_use_case.execute(cmd=test_command)
 
-    assert test_command.member is not None
-    assert test_command.member.is_attending is True
-    member_profile_repo_mock.save.assert_awaited_once_with(test_command.member)
+    member_profile_repo_mock.save.assert_awaited_once()
+    actual_member = member_profile_repo_mock.save.call_args.kwargs["member"]
+    assert actual_member.is_attending is True
 
     assert result == "Handle attendance process successful"

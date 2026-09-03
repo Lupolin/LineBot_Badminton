@@ -3,7 +3,7 @@ from unittest.mock import call
 import pytest
 
 from app.routine import SendSummaryUseCase
-from tests.mock_data import ADMIN_MEMBERS_LIST
+from tests.mock_data import ADMIN_MEMBERS
 
 
 @pytest.fixture
@@ -53,6 +53,6 @@ async def test_send_summary_success(
         pending_members=pending_members,
     )
 
-    expected_calls = [call(m.user_id, summary_message) for m in admin_members]
+    expected_calls = [call(user_id=m.user_id, message=summary_message) for m in admin_members]
     line_message_service_mock.push_message.assert_has_awaits(expected_calls, any_order=True)
-    assert line_message_service_mock.push_message.call_count == len(ADMIN_MEMBERS_LIST)
+    assert line_message_service_mock.push_message.call_count == len(ADMIN_MEMBERS)

@@ -1,11 +1,10 @@
 import pytest
 
-from app.interaction.dispatcher import UseCaseCommand
 from app.interaction.use_cases import QueryStatUseCase
 from domain.entity import (
-    MemberInfo,
     UserIntent,
 )
+from tests.mock_data import make_test_member, make_use_case_command
 
 
 @pytest.fixture
@@ -34,27 +33,20 @@ async def test_query_stat_success(
     datetime_calendar_service_mock,
     logger,
 ):
-    test_command = UseCaseCommand(
-        user_id="U001",
-        user_content="統計",
-        intent=UserIntent.QUERY_STAT,
-        member=MemberInfo(
-            user_id="U001",
-            user_name="Lucas",
-            user_content="統計",
-            role="Member",
-            is_attending=None,
-        ),
-        reply_token="fake_token",
-    )
+    test_member = make_test_member()
+    test_member.user_content = "統計"
+    test_command = make_use_case_command()
+    test_command.user_content = test_member.user_content
+    test_command.intent = UserIntent.QUERY_STAT
+    test_command.member = test_member
 
-    result = await query_stat_use_case.execute(test_command)
+    result = await query_stat_use_case.execute(cmd=test_command)
 
     datetime_calendar_service_mock.get_played_date.assert_called_once_with()
     member_profile_repo_mock.get_attending_members.assert_awaited_once_with()
     member_profile_repo_mock.get_not_attending_members.assert_awaited_once_with()
     member_profile_repo_mock.get_pending_members.assert_awaited_once_with()
-    member_profile_repo_mock.save.assert_awaited_once_with(test_command.member)
+    member_profile_repo_mock.save.assert_awaited_once_with(member=test_command.member)
 
     attending_members = member_profile_repo_mock.get_attending_members.return_value
     not_attending_members = member_profile_repo_mock.get_not_attending_members.return_value

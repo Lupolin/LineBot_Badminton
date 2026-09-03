@@ -3,7 +3,7 @@ from unittest.mock import call
 import pytest
 
 from app.routine import SendReminderUseCase
-from tests.mock_data import PENDING_MEMBERS_LIST
+from tests.mock_data import PENDING_MEMBERS
 
 
 @pytest.fixture
@@ -39,12 +39,13 @@ async def test_send_reminder_success(
     played_date = datetime_calendar_service_mock.get_played_date.return_value
     today_name = datetime_calendar_service_mock.get_today_name.return_value
 
-    remind_message = message_generator.get_reminder_message(
+    reminder_message = message_generator.get_reminder_message(
         played_date=played_date,
         today_name=today_name,
     )
 
     pending_members = member_profile_repo_mock.get_pending_members.return_value
-    expected_calls = [call(m.user_id, remind_message) for m in pending_members]
+    expected_calls = [call(user_id=m.user_id, message=reminder_message) for m in pending_members]
     line_message_service_mock.push_message.assert_has_awaits(expected_calls, any_order=True)
-    assert line_message_service_mock.push_message.call_count == len(PENDING_MEMBERS_LIST)
+
+    assert line_message_service_mock.push_message.call_count == len(PENDING_MEMBERS)

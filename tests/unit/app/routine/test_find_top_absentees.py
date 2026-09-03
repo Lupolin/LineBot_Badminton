@@ -1,7 +1,7 @@
 import pytest
 
 from app.routine import FindTopAbsenteesUseCase
-from tests.mock_data import TOP_ABSENTEES_LIST
+from tests.mock_data import TOP_ABSENTEES
 
 
 @pytest.fixture
@@ -24,4 +24,4 @@ async def test_find_top_absentees_success(
     result = await find_top_absentees_use_case.execute()
     attendance_record_repo_mock.find_top_absentees.assert_awaited_once_with()
 
-    assert result == TOP_ABSENTEES_LIST
+    assert result == TOP_ABSENTEES

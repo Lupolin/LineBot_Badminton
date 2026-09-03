@@ -1,7 +1,7 @@
 import pytest
 
 from app.routine import FindAttendanceRecordUseCase
-from tests.mock_data import ALL_ATTENDANCE_LIST
+from tests.mock_data import ALL_ATTENDANCE
 
 
 @pytest.fixture
@@ -24,4 +24,4 @@ async def test_find_attendance_record_success(
     result = await find_attendance_record_use_case.execute()
     attendance_record_repo_mock.find_all_data.assert_awaited_once_with()
 
-    assert result == ALL_ATTENDANCE_LIST
+    assert result == ALL_ATTENDANCE

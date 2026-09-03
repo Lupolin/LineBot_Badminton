@@ -23,14 +23,14 @@ from infrastructure.sqlalchemy.repositories import (
     MemberRepositoryImpl,
 )
 from tests.mock_data import (
-    ADMIN_MEMBERS_LIST,
-    ALL_ATTENDANCE_LIST,
-    ATTENDING_MEMBERS_LIST,
-    FIND_BY_ID,
+    ADMIN_MEMBERS,
+    ALL_ATTENDANCE,
+    ATTENDING_MEMBERS,
     MESSAGE_EVENT,
-    NOT_ATTENDING_MEMBERS_LIST,
-    PENDING_MEMBERS_LIST,
-    TOP_ABSENTEES_LIST,
+    NOT_ATTENDING_MEMBERS,
+    PENDING_MEMBERS,
+    TOP_ABSENTEES,
+    make_test_member,
 )
 
 
@@ -121,9 +121,9 @@ def attendance_record_repo_mock(logger: Logger, session_factory: AsyncMock) -> A
     )
 
     repo.save_all = AsyncMock()
-    repo.get_all_data = AsyncMock(return_value=ALL_ATTENDANCE_LIST)
-    repo.find_all_data = AsyncMock(return_value=ALL_ATTENDANCE_LIST)
-    repo.find_top_absentees = AsyncMock(return_value=TOP_ABSENTEES_LIST)
+    repo.get_all_data = AsyncMock(return_value=ALL_ATTENDANCE)
+    repo.find_all_data = AsyncMock(return_value=ALL_ATTENDANCE)
+    repo.find_top_absentees = AsyncMock(return_value=TOP_ABSENTEES)
 
     return repo
 
@@ -135,13 +135,13 @@ def member_profile_repo_mock(logger: Logger, session_factory: AsyncMock) -> Any:
         logger=logger,
     )
 
-    repo.get_pending_members = AsyncMock(return_value=PENDING_MEMBERS_LIST)
-    repo.get_attending_members = AsyncMock(return_value=ATTENDING_MEMBERS_LIST)
-    repo.get_not_attending_members = AsyncMock(return_value=NOT_ATTENDING_MEMBERS_LIST)
-    repo.get_admin_members = AsyncMock(return_value=ADMIN_MEMBERS_LIST)
+    repo.get_pending_members = AsyncMock(return_value=PENDING_MEMBERS)
+    repo.get_attending_members = AsyncMock(return_value=ATTENDING_MEMBERS)
+    repo.get_not_attending_members = AsyncMock(return_value=NOT_ATTENDING_MEMBERS)
+    repo.get_admin_members = AsyncMock(return_value=ADMIN_MEMBERS)
     repo.update_played_date = AsyncMock()
     repo.reset_all_attendance = AsyncMock()
     repo.save = AsyncMock()
-    repo.find_by_id = AsyncMock(return_value=FIND_BY_ID)
+    repo.find_by_id = AsyncMock(return_value=make_test_member())
 
     return repo

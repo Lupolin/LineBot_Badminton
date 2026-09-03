@@ -35,7 +35,7 @@ async def test_dispatch_success(
     )
     result = await dispatcher.execute(test_cmd)
 
-    member_profile_repo_mock.find_by_id.assert_awaited_once_with(test_cmd.user_id)
+    member_profile_repo_mock.find_by_id.assert_awaited_once_with(user_id=test_cmd.user_id)
     registry_mock.get_use_case_by_intent.assert_called_once()
 
     use_case_mock.execute.assert_awaited_once_with(ANY)
