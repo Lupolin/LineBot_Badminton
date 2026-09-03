@@ -37,8 +37,8 @@ class SendReminderUseCase:
             for member in pending_members:
                 try:
                     await self.message_service.push_message(
-                        member.user_id,
-                        reminder_message,
+                        user_id=member.user_id,
+                        message=reminder_message,
                     )
                     success_count += 1
                 except Exception as e:

@@ -38,7 +38,7 @@ class QueryStatUseCase:
             )
 
             assert cmd.member is not None
-            await self.member_profile_repo.save(cmd.member)
+            await self.member_profile_repo.save(member=cmd.member)
 
             if cmd.reply_token:
                 await self.message_service.reply_message(

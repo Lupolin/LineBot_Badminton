@@ -139,7 +139,7 @@ class Registry:
     def send_top_absentee_use_case(self) -> SendTopAbsenteeUseCase:
         return SendTopAbsenteeUseCase(
             member_profile_repo=infra_registry.member_profile_repo,
-            absentee_repo=infra_registry.attendance_record_repo,
+            attendance_record_repo=infra_registry.attendance_record_repo,
             message_service=infra_registry.line_message_service,
             message_generator=self._message_generator,
             logger=infra_registry.logger,

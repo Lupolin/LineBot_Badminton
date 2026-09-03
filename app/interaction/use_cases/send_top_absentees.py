@@ -17,7 +17,7 @@ from ..dispatcher import UseCaseCommand
 @dataclass
 class SendTopAbsenteeUseCase:
     member_profile_repo: MemberProfileRepository
-    absentee_repo: AttendanceRecordRepository
+    attendance_record_repo: AttendanceRecordRepository
     message_service: MessageService
     message_generator: MessageGenerator
     logger: Logger
@@ -27,15 +27,15 @@ class SendTopAbsenteeUseCase:
         try:
             self.logger.info(f"Executing SendTopAbsenteeUseCase | User: {cmd.user_id} | Intent: {cmd.intent}")
 
-            raw_list = await self.absentee_repo.find_top_absentees()
+            raw_list = await self.attendance_record_repo.find_top_absentees()
             top_absentee_list = raw_list if raw_list is not None else []
 
             self.logger.info(f"Retrieved {len(top_absentee_list)} absentees from repository")
 
-            message = self.message_generator.get_attendance_result_message(top_absentee_list)
+            message = self.message_generator.get_attendance_result_message(absentee=top_absentee_list)
 
             assert cmd.member is not None
-            await self.member_profile_repo.save(cmd.member)
+            await self.member_profile_repo.save(member=cmd.member)
 
             if cmd.reply_token:
                 await self.message_service.reply_message(

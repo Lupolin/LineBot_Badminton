@@ -30,7 +30,7 @@ class RegisterMemberUseCase:
         message = "偷偷跟你說喔！你是我的管理員了❤️" if is_admin_request else "註冊好了！\n我再也不會忘記你了！"
 
         try:
-            user_name = await self.api_service.get_user_name(cmd.user_id)
+            user_name = await self.api_service.get_user_name(user_id=cmd.user_id)
 
             member = MemberInfo(
                 user_id=cmd.user_id,
@@ -46,7 +46,7 @@ class RegisterMemberUseCase:
                 user_content=cmd.user_content,
             )
 
-            await self.member_profile_repo.save(member)
+            await self.member_profile_repo.save(member=member)
 
             if cmd.reply_token:
                 await self.message_service.reply_message(

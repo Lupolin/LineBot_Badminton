@@ -23,7 +23,7 @@ class HandleAttendanceUseCase:
                 intent=cmd.intent,
                 user_content=cmd.user_content,
             )
-            await self.member_profile_repo.save(cmd.member)
+            await self.member_profile_repo.save(member=cmd.member)
 
             self.logger.info(f"Attendance update process finished for user: {cmd.user_id}")
             return "Handle attendance process successful"

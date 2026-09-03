@@ -35,12 +35,12 @@ class NotifyAgainUseCase:
             )
 
             assert cmd.member is not None
-            await self.member_profile_repo.save(cmd.member)
+            await self.member_profile_repo.save(member=cmd.member)
 
             for m in pending_members:
                 await self.message_service.push_message(
-                    m.user_id,
-                    reminder_message,
+                    user_id=m.user_id,
+                    message=reminder_message,
                 )
 
             self.logger.info(f"Notify Again process finished for user: {cmd.user_id}")

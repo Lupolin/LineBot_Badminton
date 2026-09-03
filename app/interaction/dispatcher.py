@@ -38,8 +38,8 @@ class IntentDispatcher:
 
     @trace_method("UseCase: IntentDispatcher.execute")
     async def execute(self, cmd: IntentDispatcherCommand) -> str:
-        intent = UserIntent.from_text(cmd.user_content)
-        member = await self.member_profile_repo.find_by_id(cmd.user_id)
+        intent = UserIntent.from_text(text=cmd.user_content)
+        member = await self.member_profile_repo.find_by_id(user_id=cmd.user_id)
 
         self.logger.info(f"Dispatching request | User: {cmd.user_id} | Intent: {intent.name}")
 
@@ -59,7 +59,7 @@ class IntentDispatcher:
 
         self.logger.info(f"Dispatching message: user={cmd.user_id}, intent={intent.name}")
 
-        use_case = self.registry.get_use_case_by_intent(intent)
+        use_case = self.registry.get_use_case_by_intent(intent=intent)
         if use_case is None:
             self.logger.error(f"No UseCase found for intent={intent.name}, content='{cmd.user_content}'")
             return "No UseCase found for your request."

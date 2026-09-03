@@ -41,8 +41,8 @@ class SendSummaryUseCase:
             for member in admin_members:
                 try:
                     await self.message_service.push_message(
-                        member.user_id,
-                        summary_message,
+                        user_id=member.user_id,
+                        message=summary_message,
                     )
                     success_count += 1
                 except Exception as e:
