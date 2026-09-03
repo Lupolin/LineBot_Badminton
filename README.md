@@ -74,13 +74,14 @@ $ make local-env-rm
 
 請在 PyCharm 中建立一個 Python 執行物件（Run/Debug Configuration），參數對照表如下：
 
-| Field             | Value                                      | Description                |
-|:------------------|:-------------------------------------------|:---------------------------|
-| Name              | `debug`                                    | 配置名稱                       |
-| Run type          | `module`                                   | 以 Python 模組形式啟動            |
-| Module name       | `uvicorn`                                  | ASGI 伺服器                   |
-| Parameters        | `startup:app --host 127.0.0.1 --port 8080` | startup:app 指向 FastAPI 進入點 |
-| Working directory | `~/LineBot_Badminton`                      | 指向專案根目錄                    |
+| Field                 | Value                                      | Description                |
+|:----------------------|:-------------------------------------------|:---------------------------|
+| Name                  | `debug`                                    | 配置名稱                       |
+| Run type              | `module`                                   | 以 Python 模組形式啟動            |
+| Module name           | `uvicorn`                                  | ASGI 伺服器                   |
+| Parameters            | `startup:app --host 127.0.0.1 --port 8080` | startup:app 指向 FastAPI 進入點 |
+| Working directory     | `~/LineBot_Badminton`                      | 指向專案根目錄                    |
+| Environment variables | `PYTHONUNBUFFERED=1;ENV={env.value}`       | 透過 ENV 決定環境                |
 
 ## 上版步驟
 
